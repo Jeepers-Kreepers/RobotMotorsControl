@@ -1,4 +1,4 @@
-# RobotMotorsControl
+# RobotMotorsControl (new)
 Linux operating system training on the Skillbox platform
 
 # Пояснения
