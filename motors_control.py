@@ -36,6 +36,25 @@ class DummyMotor(Motor):
         else:
             print(f"Некорректное направление для мотора {self.name}. Допустимые значения: -1, 0, 1.")
 
+    def set_speed_smooth(self, target_speed, step=0.01, interval=0.1):
+        """
+        Плавное изменение скорости мотора.
+
+        Args:
+            target_speed (float): Целевая скорость в диапазоне от -1 до 1.
+            step (float): Шаг изменения скорости.
+            interval (float): Интервал времени между шагами в секундах.
+        """
+        current_speed = self.speed
+        while abs(current_speed - target_speed) > step:
+            if current_speed < target_speed:
+                current_speed = min(current_speed + step, target_speed)
+            else:
+                current_speed = max(current_speed - step, target_speed)
+            self.set_speed(current_speed)
+            time.sleep(interval)
+        self.set_speed(target_speed)  # Устанавливаем окончательную скорость
+
 
 class Robot:
     """
@@ -57,12 +76,33 @@ class Robot:
             time.sleep(duration)
             self.stop()
 
+    def move_forward_smooth(self, target_speed=0.5, duration=None, step=0.01, interval=0.1):
+        """Плавное движение вперед"""
+        self.left_motor.set_direction(1)
+        self.right_motor.set_direction(1)
+        self.left_motor.set_speed_smooth(target_speed, step, interval)
+        self.right_motor.set_speed_smooth(target_speed, step, interval)
+        if duration:
+            time.sleep(duration)
+            self.stop()
+
     def move_backward(self, speed=0.5, duration=None):
         """Движение назад."""
         self.left_motor.set_direction(-1)
         self.right_motor.set_direction(-1)
         self.left_motor.set_speed(speed)
         self.right_motor.set_speed(speed)
+
+        if duration:
+            time.sleep(duration)
+            self.stop()
+
+    def move_backward_smooth(self, target_speed=0.5, duration=None, step=0.01, interval=0.1):
+        """Плавное движение назад."""
+        self.left_motor.set_direction(-1)
+        self.right_motor.set_direction(-1)
+        self.left_motor.set_speed_smooth(target_speed, step, interval)
+        self.right_motor.set_speed_smooth(target_speed, step, interval)
 
         if duration:
             time.sleep(duration)
@@ -79,12 +119,34 @@ class Robot:
             time.sleep(duration)
             self.stop()
 
+    def turn_left_smooth(self, target_speed=0.5, duration=None, step=0.01, interval=0.1):
+        """Плавный поворот налево."""
+        self.left_motor.set_direction(-1)
+        self.right_motor.set_direction(1)
+        self.left_motor.set_speed_smooth(target_speed, step, interval)
+        self.right_motor.set_speed_smooth(target_speed, step, interval)
+
+        if duration:
+            time.sleep(duration)
+            self.stop()
+
     def turn_right(self, speed=0.5, duration=None):
         """Поворот направо."""
         self.left_motor.set_direction(1)
         self.right_motor.set_direction(-1)
         self.left_motor.set_speed(speed)
         self.right_motor.set_speed(speed)
+
+        if duration:
+            time.sleep(duration)
+            self.stop()
+
+    def turn_right_smooth(self, target_speed=0.5, duration=None, step=0.01, interval=0.1):
+        """Плавный поворот направо."""
+        self.left_motor.set_direction(1)
+        self.right_motor.set_direction(-1)
+        self.left_motor.set_speed_smooth(target_speed, step, interval)
+        self.right_motor.set_speed_smooth(target_speed, step, interval)
 
         if duration:
             time.sleep(duration)
@@ -109,17 +171,17 @@ if __name__ == "__main__":
     left_motor.enable()
     right_motor.enable()
 
-    print("Робот движется вперед")
-    robot.move_forward(speed=0.8, duration=2)
+    print("Робот плавно движется вперед")
+    robot.move_forward_smooth(target_speed=0.8, duration=2)
 
-    print("Робот поворачивает на лево")
-    robot.turn_left(duration=2)
+    print("Робот плавно поворачивает на лево")
+    robot.turn_left_smooth(duration=2)
 
-    print("Робот движется назад")
-    robot.move_backward(duration=2)
+    print("Робот плавно движется назад")
+    robot.move_backward_smooth(duration=2)
 
-    print("Робот поворачивает на право")
-    robot.turn_right(duration=2)
+    print("Робот плавно поворачивает на право")
+    robot.turn_right_smooth(duration=2)
 
     left_motor.disable()
     right_motor.disable()
