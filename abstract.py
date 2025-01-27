@@ -33,3 +33,15 @@ class Motor(ABC):
              direction (int): 1 - вперед, -1 - назад, 0 - стоп
         """
         pass
+
+    @abstractmethod
+    def set_speed_smooth(self, target_speed, step=0.01, interval=0.1):
+        """
+       Плавное изменение скорости мотора.
+
+       Args:
+            target_speed (float): Целевая скорость в диапазоне от -1 до 1.
+            step (float): Шаг изменения скорости.
+            interval (float): Интервал времени между шагами в секундах.
+        """
+        pass
